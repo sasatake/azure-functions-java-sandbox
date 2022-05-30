@@ -14,7 +14,10 @@
         <java.version>11</java.version>
         <azure.functions.maven.plugin.version>1.18.0</azure.functions.maven.plugin.version>
         <azure.functions.java.library.version>2.0.0</azure.functions.java.library.version>
-        <functionAppName>functions-java-sandbox-20220529120021021</functionAppName>
+        <resourceGroupName>functions-java-rg</resourceGroupName>
+        <appServicePlanName>functions-java-service-plan</appServicePlanName>
+        <functionAppName>functions-java-functions</functionAppName>
+        <region>japaneast</region>
     </properties>
 
     <dependencies>
@@ -60,12 +63,12 @@
                     <!-- function app name -->
                     <appName>${functionAppName}</appName>
                     <!-- function app resource group -->
-                    <resourceGroup>java-functions-group</resourceGroup>
+                    <resourceGroup>${resourceGroupName}</resourceGroup>
                     <!-- function app service plan name -->
-                    <appServicePlanName>java-functions-app-service-plan</appServicePlanName>
+                    <appServicePlanName>${appServicePlanName}</appServicePlanName>
                     <!-- function app region-->
                     <!-- refers https://github.com/microsoft/azure-maven-plugins/wiki/Azure-Functions:-Configuration-Details#supported-regions for all valid values -->
-                    <region>westus</region>
+                    <region>${region}</region>
                     <!-- function pricingTier, default to be consumption if not specified -->
                     <!-- refers https://github.com/microsoft/azure-maven-plugins/wiki/Azure-Functions:-Configuration-Details#supported-pricing-tiers for all valid values -->
                     <!-- <pricingTier></pricingTier> -->
@@ -74,7 +77,7 @@
                     <!-- <disableAppInsights></disableAppInsights> -->
                     <runtime>
                         <!-- runtime os, could be windows, linux or docker-->
-                        <os>windows</os>
+                        <os>linux</os>
                         <javaVersion>11</javaVersion>
                     </runtime>
                     <appSettings>

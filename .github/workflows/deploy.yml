@@ -1,0 +1,47 @@
+# File: .github/workflows/OIDC_workflow.yml
+
+name: Deploy Azure Functions With Java
+on:
+  push:
+    branches:
+      - "release"
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AZURE_FUNCTIONAPP_NAME: functions-java-functions
+  JAVA_VERSION: "11"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: "Az CLI login"
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Java Sdk 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: "microsoft"
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: "Restore Project Dependencies Using Mvn"
+        shell: bash
+        run: |
+          mvn clean package
+          mvn azure-functions:package
+
+      - name: "Run Azure Functions Action"
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          respect-pom-xml: true
