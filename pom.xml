@@ -18,6 +18,7 @@
         <appServicePlanName>functions-java-service-plan</appServicePlanName>
         <functionAppName>functions-java-functions</functionAppName>
         <region>japaneast</region>
+        <storageAccountName>functionsjavadata</storageAccountName>
     </properties>
 
     <dependencies>
@@ -85,6 +86,10 @@
                             <name>FUNCTIONS_EXTENSION_VERSION</name>
                             <value>~4</value>
                         </property>
+                        <property>
+                            <name>AzureWebJobsStorage</name>
+                            <value>DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=;EndpointSuffix=core.windows.net</value>
+                        </property>                        
                     </appSettings>
                 </configuration>
                 <executions>
