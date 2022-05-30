@@ -2,7 +2,7 @@
 
 set -eu
 
-if !(type az && type gh > /dev/null 2>&1); then
+if !(type az > /dev/null 2>&1 && type gh > /dev/null 2>&1); then
   echo "should install azure-cli and github-cli."
   exit
 fi
@@ -11,6 +11,7 @@ appName=functions-deployment-app
 repoUser=sasatake
 repoName=azure-functions-java-sandbox
 branchName=release
+description='Deployment Azure Functions Application.'
 
 subscriptionId=$(az account list --all --query '[?isDefault].id' --output tsv --only-show-errors)
 tenantId=$(az account list --all --query '[?isDefault].tenantId' --output tsv --only-show-errors)
@@ -21,8 +22,8 @@ objectId=$(az ad app list --display-name $appName --query '[0].objectId' --outpu
 echo ""
 
 echo "create service principle."
-size=$(az ad sp list --display-name $appName --query 'length([])' --only-show-errors)
-if [ $((size)) -eq 0 ]; then
+appCount=$(az ad sp list --display-name $appName --query 'length([])' --only-show-errors)
+if [ $((appCount)) -eq 0 ]; then
   assigneeObjectId=$(az ad sp create --id $appId --query objectId --output tsv --only-show-errors)
 else
   assigneeObjectId=$(az ad sp list --display-name $appName --query '[0].objectId' --output tsv --only-show-errors)
@@ -31,16 +32,16 @@ echo ""
 
 echo "create role assignment."
 az role assignment create \
-  --role "Contributor" \
-  --description "Assign ${appName} to Contributor." \
+  --role "Website Contributor" \
+  --description "Assign ${appName} to Website Contributor." \
   --subscription $subscriptionId \
   --assignee-object-id $assigneeObjectId \
   --assignee-principal-type ServicePrincipal \
   --only-show-errors > /dev/null
 echo ""
 az role assignment create \
-  --role "User Access Administrator" \
-  --description "Assign ${appName} to User Access Administrator." \
+  --role "Web Plan Contributor" \
+  --description "Assign ${appName} to Website Plan Contributor." \
   --subscription $subscriptionId \
   --assignee-object-id $assigneeObjectId \
   --assignee-principal-type ServicePrincipal \
@@ -55,7 +56,7 @@ createFederatedIdentity(){
   az rest \
     --method POST \
     --uri ${uri} \
-    --body "{'name':'${appName}','subject':'${subject}','description':'Provisioning Terraform By GitHub Actions.','issuer':'https://token.actions.githubusercontent.com','audiences':['api://AzureADTokenExchange']}" \
+    --body "{'name':'${appName}','subject':'${subject}','description':'${description}','issuer':'https://token.actions.githubusercontent.com','audiences':['api://AzureADTokenExchange']}" \
     > /dev/null
 }
 
@@ -64,27 +65,19 @@ updateFederatedIdentity(){
   az rest \
     --method PATCH \
     --uri "${uri}/${appName}" \
-    --body "{'name':'${appName}','subject':'${subject}','description':'Provisioning Terraform By GitHub Actions.','issuer':'https://token.actions.githubusercontent.com','audiences':['api://AzureADTokenExchange']}" \
+    --body "{'name':'${appName}','subject':'${subject}','description':'${description}','issuer':'https://token.actions.githubusercontent.com','audiences':['api://AzureADTokenExchange']}" \
     > /dev/null
 }
 
-set +e
+federatedIdentityCount=$(az rest --method GET --uri ${uri} --query 'length(value[])')
 
-az rest \
-  --method GET \
-  --uri ${uri} >& /dev/null
-
-federatedIdentityIsCreated=$?
-
-if [ $((federatedIdentityIsCreated)) -eq 0 ]; then
-  updateFederatedIdentity
+if [ $((federatedIdentityCount)) -eq 0 ]; then
+  createFederatedIdentity
 else
-  createFederatedIdentity  
+  updateFederatedIdentity
 fi
 echo ""
 echo ""
-
-set -e
 
 gh secret set AZURE_CLIENT_ID --body ${appId} --app actions --repos ${repoUser}/${repoName}
 gh secret set AZURE_SUBSCRIPTION_ID --body ${subscriptionId} --app actions --repos ${repoUser}/${repoName}
