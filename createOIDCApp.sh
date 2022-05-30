@@ -47,6 +47,14 @@ az role assignment create \
   --assignee-principal-type ServicePrincipal \
   --only-show-errors > /dev/null
 echo ""
+az role assignment create \
+  --role "Storage Account Key Operator Service Role" \
+  --description "Assign ${appName} to Storage Account Key Operator Service Role." \
+  --subscription $subscriptionId \
+  --assignee-object-id $assigneeObjectId \
+  --assignee-principal-type ServicePrincipal \
+  --only-show-errors > /dev/null
+echo ""
 
 uri="https://graph.microsoft.com/beta/applications/${objectId}/federatedIdentityCredentials"
 subject="repo:${repoUser}/${repoName}:ref:refs/heads/${branchName}"
