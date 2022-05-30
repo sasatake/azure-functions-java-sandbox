@@ -48,8 +48,8 @@ az role assignment create \
   --only-show-errors > /dev/null
 echo ""
 az role assignment create \
-  --role "Storage Account Key Operator Service Role" \
-  --description "Assign ${appName} to Storage Account Key Operator Service Role." \
+  --role "Storage Account Contributor" \
+  --description "Assign ${appName} to Storage Account Contributor." \
   --subscription $subscriptionId \
   --assignee-object-id $assigneeObjectId \
   --assignee-principal-type ServicePrincipal \
