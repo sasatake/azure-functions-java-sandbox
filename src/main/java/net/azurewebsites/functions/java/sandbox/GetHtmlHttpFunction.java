@@ -16,9 +16,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
 
-public class HttpGetHtml {
+public class GetHtmlHttpFunction {
 
-  @FunctionName("HttpGetHtml")
+  @FunctionName("GetHtml")
   public HttpResponseMessage run(
       @HttpTrigger(name = "req", methods = {
           HttpMethod.GET }, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
