@@ -43,8 +43,11 @@ public class GetHtmlHttpFunctionTest {
         final ExecutionContext context = mock(ExecutionContext.class);
         doReturn(Logger.getGlobal()).when(context).getLogger();
 
+        @SuppressWarnings("unchecked")
+        final OutputBinding<String> msg = (OutputBinding<String>) mock(OutputBinding.class);
+
         // Invoke
-        final HttpResponseMessage ret = new GetHtmlHttpFunction().run(req, context);
+        final HttpResponseMessage ret = new GetHtmlHttpFunction().run(req, msg, context);
 
         // Verify
         assertEquals(ret.getStatus(), HttpStatus.ACCEPTED);
