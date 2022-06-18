@@ -18,13 +18,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Optional;
 
-public class GetHtmlHttpFunction {
+public class GetHtmlStartHttpFunction {
 
-  @FunctionName("GetHtml")
+  @FunctionName("GetHtmlStart")
   public HttpResponseMessage run(
       @HttpTrigger(name = "req", methods = {
           HttpMethod.GET }, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
-      @QueueOutput(name = "message", queueName = "messages", connection = "QueueConnection") OutputBinding<String> message,
+      @QueueOutput(name = "message", queueName = "jobs", connection = "QueueConnection") OutputBinding<String> message,
       final ExecutionContext context) throws JsonParseException, JsonMappingException, JsonProcessingException {
 
     var response = "Accepted.";
@@ -34,7 +34,7 @@ public class GetHtmlHttpFunction {
         .writerWithDefaultPrettyPrinter()
         .writeValueAsString(new BaseHttpResponse(response));
 
-    message.setValue(response);
+    message.setValue("start");
 
     return request.createResponseBuilder(HttpStatus.ACCEPTED)
         .body(json).header("content-type", "application/json").build();
