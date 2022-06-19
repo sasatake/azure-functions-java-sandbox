@@ -24,7 +24,7 @@ public class GetHtmlStartHttpFunction {
   public HttpResponseMessage run(
       @HttpTrigger(name = "req", methods = {
           HttpMethod.GET }, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
-      @QueueOutput(name = "message", queueName = "jobs", connection = "QueueConnection") OutputBinding<String> message,
+      @QueueOutput(name = "message", queueName = "getEbookSummaryJobs", connection = "QueueConnection") OutputBinding<String> message,
       final ExecutionContext context) throws JsonParseException, JsonMappingException, JsonProcessingException {
 
     var response = "Accepted.";
