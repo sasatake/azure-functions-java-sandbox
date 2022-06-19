@@ -25,10 +25,10 @@ public class ScrapeHtmlQueueFunction {
 
   @FunctionName("ScrapeHtml")
   public void run(
-      @QueueTrigger(name = Constants.EBOOK_SUMMARY_QUEUE_NAME, queueName = Constants.EBOOK_SUMMARY_QUEUE_NAME, connection = "QueueConnection") String message,
+      @QueueTrigger(name = "queueIn", queueName = Constants.EBOOK_SUMMARY_QUEUE_NAME, connection = "QueueConnection") String message,
       @BlobInput(name = "html", dataType = "binary", path = "app/ebook/index.html", connection = "BlobConnection") byte[] html,
       @BlobOutput(name = "html", dataType = "binary", path = "app/ebook/index.html", connection = "BlobConnection") OutputBinding<byte[]> outputItem,
-      @QueueOutput(name = Constants.EBOOK_DETAIL_QUEUE_NAME, queueName = Constants.EBOOK_DETAIL_QUEUE_NAME, connection = "QueueConnection") OutputBinding<List<String>> outMessages,
+      @QueueOutput(name = "queueOut", queueName = Constants.EBOOK_DETAIL_QUEUE_NAME, connection = "QueueConnection") OutputBinding<List<String>> outMessages,
       final ExecutionContext context)
       throws IOException, InterruptedException {
 
